@@ -1,0 +1,14 @@
+{
+  "name": "taskmanager",
+  "version": "1.0.0",
+  "description": "The Cloud-Based Task Manager is a web application designed to streamline team task management. Built using the MERN stack (MongoDB, Express.js, React, and Node.js), this platform provides a user-friendly interface for efficient task assignment, tracking, and collaboration. The application caters to administrators and regular users, offering comprehensive features to enhance productivity and organization.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "start": "npm run install-all && concurrently \"npm run start --prefix client\" \"npm run start --prefix server\"",
+    "install-all": "npm install --prefix client && npm install --prefix server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
