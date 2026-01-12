@@ -8,7 +8,7 @@ export const taskApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${TASKS_URL}/dashboard`,
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include'   
             }),
         }),
 

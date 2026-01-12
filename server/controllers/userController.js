@@ -2,6 +2,8 @@ import { response } from "express";
 import User from "../models/user.js";
 import { createJWT } from "../utils/index.js";
 import Notice from "../models/notification.js";
+import sendEmail from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 export const registerUser = async (req, res) => {
   try {
@@ -80,10 +82,72 @@ export const loginUser = async (req, res) => {
   }
 };
 
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    // console.log("User found:", user);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    user.resetOTP !== otp
+    console.log("Stored OTP:", user.resetOTP);
+    console.log("Received OTP:", otp);
+
+    user.resetOTPExpires = otpExpiry;
+
+    await user.save();
+
+    const message = `
+      <p>Your OTP for password reset is: <strong>${otp}</strong></p>
+      <p>This OTP will expire in 10 minutes.</p>
+    `;
+
+    await sendEmail({
+      to: user.email,
+      subject: "Your OTP for Password Reset",
+      html: message,
+    });
+
+    res.status(200).json({ message: "OTP sent to your email." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+export const verifyOTPAndResetPassword = async (req, res) => {
+  const { email, otp, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user || user.resetOTP !== otp || user.resetOTPExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.password = password;
+    user.resetOTP = undefined;
+    user.resetOTPExpires = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: "Password has been reset successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to reset password." });
+  }
+};
+
 export const logoutUser = async (req, res) => {
   try {
     res.cookie("token", "", {
-      htttpOnly: true,
+      httpOnly: true,
       expires: new Date(0),
     });
 
@@ -113,7 +177,7 @@ export const getNotificationsList = async (req, res) => {
       team: userId,
       isRead: { $nin: [userId] },
     }).populate("task", "title");
-    
+
 
     res.status(201).json(notice);
   } catch (error) {

@@ -4,6 +4,7 @@ import {
   activateUserProfile,
   changeUserPassword,
   deleteUserProfile,
+  forgotPassword,
   getNotificationsList,
   getTeamList,
   loginUser,
@@ -11,6 +12,7 @@ import {
   markNotificationRead,
   registerUser,
   updateUserProfile,
+  verifyOTPAndResetPassword,
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -19,12 +21,16 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 
+router.post("/forgot-password", forgotPassword);
+router.post("/verify-otp-reset-password", verifyOTPAndResetPassword);
+
 router.get("/get-team", protectRoute, isAdminRoute, getTeamList);
 router.get("/notifications", protectRoute, getNotificationsList);
 
 router.put("/profile", protectRoute, updateUserProfile);
 router.put("/read-noti", protectRoute, markNotificationRead);
 router.put("/change-password", protectRoute, changeUserPassword);
+
 
 // //   FOR ADMIN ONLY - ADMIN ROUTES
 router

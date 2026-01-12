@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Textbox from "../components/Textbox";
@@ -9,9 +9,12 @@ import { useLoginMutation } from "../redux/slices/api/authAPISlice";
 import { setCredentials } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
 import Loading from "../components/Loader";
+import ForgotPassword from "../components/ForgotPassword";
 
 const Login = () => {
   const { user } = useSelector((state) => state.auth);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -111,9 +114,13 @@ const Login = () => {
                 error={errors.password ? errors.password.message : ""}
               />
 
-              <span className="text-sm text-gray-500 hover:text-blue-600 hover:underline cursor-pointer">
+              <span
+                className="text-sm text-gray-500 hover:text-blue-600 hover:underline cursor-pointer"
+                onClick={() => setShowForgotPassword(true)}
+              >
                 Forgot your password? Reset it here.
               </span>
+
 
               {isLoading ? (
                 <Loading />
@@ -128,6 +135,13 @@ const Login = () => {
           </form>
         </div>
       </div>
+
+      {showForgotPassword && (
+        <ForgotPassword
+          open={showForgotPassword}
+          setOpen={setShowForgotPassword}
+        />
+      )}
     </div>
   );
 };
