@@ -20,21 +20,32 @@ app.get('/', (req, res) => {
 });
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001",  "https://task-manager-fronted-five.vercel.app"],
-    methods: ["GET", "POST", "DELETE", "PUT"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://task-manager-fronted-new.vercel.app"
+    ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   })
 );
 
+app.options("*", cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
 app.use(morgan("dev"));
+
+app.get("/", (req, res) => {
+  res.send("Backend server is running 🚀");
+}); 
+
 app.use("/api", routes);
 
 app.use(routeNotFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+// app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+export default app;
